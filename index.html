@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blindados do Exército Brasileiro | Catálogo e Histórico</title>
+
+    <link rel="icon" type="image/x-icon" href="img/iconeb2.png">
+
+    <style>
+        :root {
+            /* Cores Militares Táticas e Modernas */
+            --army-green: #2b3a26;
+            --army-dark: #1a2217;
+            --army-accent: #556b2f;
+            --army-gold: #d4af37;
+            --bg-color: #0f140d;
+            --card-bg: #1f281c;
+            --text-light: #e0e6ed;
+            --text-muted: #9ba897;
+            --shadow: 0 4px 6px rgba(0,0,0,0.3);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-light);
+            line-height: 1.6;
+            padding-bottom: 2rem;
+        }
+
+        /* --- Header & Navegação --- */
+        header {
+            background: linear-gradient(180deg, var(--army-dark) 0%, var(--bg-color) 100%);
+            padding: 4rem 1rem;
+            text-align: center;
+            border-bottom: 2px solid var(--army-accent);
+            box-shadow: var(--shadow);
+        }
+
+        header h1 {
+            font-size: 2.8rem;
+            color: var(--army-gold);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 0.8rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        header p {
+            color: var(--text-muted);
+            max-width: 750px;
+            margin: 0 auto;
+            font-size: 1.15rem;
+        }
+
+        /* --- Controles de Filtro --- */
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            padding: 2rem 1rem;
+            flex-wrap: wrap;
+            position: sticky;
+            top: 0;
+            background-color: var(--bg-color);
+            z-index: 100;
+            border-bottom: 1px solid #2e3d2a;
+        }
+
+        .btn-filter {
+            background-color: var(--card-bg);
+            color: var(--text-light);
+            border: 1px solid var(--army-accent);
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: bold;
+        }
+
+        .btn-filter:hover, .btn-filter.active {
+            background-color: var(--army-accent);
+            color: #fff;
+            box-shadow: 0 0 15px rgba(85, 107, 47, 0.6);
+        }
+
+        /* --- Grid de Veículos --- */
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 30px;
+            padding: 2rem 0;
+        }
+
+        /* --- Estilo do Card (Quadradinhos) --- */
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid #2e3d2a;
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+            cursor: pointer;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.8);
+            border-color: var(--army-gold);
+        }
+
+        .card-img-container {
+            width: 100%;
+            height: 240px;
+            background-color: #1a2217;
+            overflow: hidden;
+            border-bottom: 3px solid var(--army-accent);
+        }
+
+        .card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .card:hover img {
+            transform: scale(1.08);
+        }
+
+        .card-body {
+            padding: 1.8rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-tag {
+            align-self: flex-start;
+            background-color: var(--army-accent);
+            color: #fff;
+            font-size: 0.8rem;
+            padding: 5px 12px;
+            border-radius: 3px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            letter-spacing: 1px;
+            font-weight: bold;
+        }
+
+        .card-title {
+            font-size: 1.7rem;
+            color: #fff;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+        }
+
+        .card-spec {
+            font-size: 1rem;
+            color: var(--text-muted);
+            background: rgba(0,0,0,0.2);
+            padding: 8px;
+            border-radius: 4px;
+        }
+
+        /* --- Modal --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.92);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 1rem;
+            backdrop-filter: blur(8px);
+        }
+
+        .modal {
+            background-color: var(--card-bg);
+            border: 2px solid var(--army-gold);
+            border-radius: 8px;
+            max-width: 850px;
+            width: 100%;
+            position: relative;
+            max-height: 92vh;
+            overflow-y: auto;
+            animation: modalFadeIn 0.5s ease;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.9);
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: scale(0.9) translateY(20px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 25px;
+            background: rgba(0,0,0,0.5);
+            border: 1px solid var(--army-gold);
+            color: var(--army-gold);
+            font-size: 2rem;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            background-color: var(--army-gold);
+            color: var(--army-dark);
+        }
+
+        .modal-header-img {
+            width: 100%;
+            height: 340px;
+            object-fit: cover;
+            border-bottom: 4px solid var(--army-gold);
+        }
+
+        .modal-content {
+            padding: 2.5rem;
+        }
+
+        .modal-title-block {
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #2e3d2a;
+            padding-bottom: 1rem;
+        }
+
+        .modal-title {
+            color: #fff;
+            font-size: 2.5rem;
+            text-transform: uppercase;
+            margin-bottom: 0.3rem;
+        }
+
+        .modal-tag {
+            color: var(--army-gold);
+            font-size: 1.1rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .modal-section {
+            margin-bottom: 2.5rem;
+        }
+
+        .modal-section-title {
+            color: var(--army-gold);
+            font-size: 1.4rem;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-section-title::after {
+            content: '';
+            flex-grow: 1;
+            height: 1px;
+            background-color: #2e3d2a;
+        }
+
+        .modal-desc {
+            color: var(--text-light);
+            font-size: 1.1rem;
+            background: rgba(0,0,0,0.3);
+            padding: 1.5rem;
+            border-radius: 4px;
+            border-left: 3px solid var(--army-accent);
+        }
+
+        .modal-list {
+            list-style: none;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+        }
+
+        .modal-list li {
+            padding: 12px;
+            border-bottom: 1px solid #2e3d2a;
+            font-size: 1rem;
+            background: rgba(255,255,255,0.03);
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .modal-list li strong {
+            color: var(--army-gold);
+            margin-right: 10px;
+        }
+
+        .modal-history p {
+            color: var(--text-light);
+            font-size: 1.05rem;
+            line-height: 1.8;
+            margin-bottom: 1.2rem;
+            text-align: justify;
+        }
+
+        .modal-history p:last-child {
+            margin-bottom: 0;
+        }
+
+        .modal-history-box {
+            background: rgba(0,0,0,0.25);
+            padding: 1.8rem;
+            border-radius: 6px;
+            border: 1px solid #2e3d2a;
+        }
+
+        /* --- WIDGET INTERATIVO DO AUTOR (Canto Inferior Esquerdo) --- */
+        .author-widget {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 999;
+            background: rgba(26, 34, 23, 0.85);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(212, 175, 55, 0.4);
+            border-left: 4px solid var(--army-gold);
+            border-radius: 8px;
+            padding: 12px 16px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            transition: var(--transition);
+        }
+
+        .author-widget:hover {
+            transform: translateY(-4px);
+            border-color: var(--army-gold);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.8), 0 0 15px rgba(212, 175, 55, 0.2);
+        }
+
+        .widget-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #2eb85c;
+            border-radius: 50%;
+            box-shadow: 0 0 6px #2eb85c;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.9); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .widget-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .widget-author-name {
+            color: #ffffff;
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .widget-email-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(212, 175, 55, 0.1);
+            color: var(--army-gold);
+            text-decoration: none;
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            transition: var(--transition);
+            margin-top: 2px;
+        }
+
+        .widget-email-btn:hover {
+            background: var(--army-gold);
+            color: var(--army-dark);
+            border-color: var(--army-gold);
+        }
+
+        /* --- Footer (Rodapé com Seção do Autor) --- */
+        footer {
+            text-align: center;
+            padding: 3.5rem 1rem 2.5rem 1rem;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            border-top: 1px solid #2e3d2a;
+            margin-top: 4rem;
+            background-color: var(--army-dark);
+        }
+
+        .footer-author-box {
+            max-width: 500px;
+            margin: 0 auto 2rem auto;
+            padding: 1.5rem;
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 8px;
+            border: 1px solid #2e3d2a;
+            border-top: 3px solid var(--army-gold);
+        }
+
+        .footer-author-box h5 {
+            color: var(--army-gold);
+            font-size: 1.15rem;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .footer-author-box p {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            margin-bottom: 1rem;
+        }
+
+        .footer-email-link {
+            display: inline-block;
+            color: var(--army-gold);
+            text-decoration: none;
+            font-weight: bold;
+            padding: 8px 16px;
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px dashed var(--army-gold);
+            border-radius: 4px;
+            transition: var(--transition);
+        }
+
+        .footer-email-link:hover {
+            background: var(--army-gold);
+            color: var(--army-dark);
+            border-style: solid;
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            header h1 { font-size: 2rem; }
+            .modal-content { padding: 1.5rem; }
+            .modal-title { font-size: 1.8rem; }
+            .modal-header-img { height: 200px; }
+            
+            .author-widget {
+                bottom: 12px;
+                left: 12px;
+                padding: 10px 12px;
+            }
+            .widget-author-name { font-size: 0.9rem; }
+            .widget-email-btn { font-size: 0.75rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Força Blindada Brasileira</h1>
+        <p>Catálogo tático interativo contendo especificações técnicas, dados operacionais e o contexto histórico detalhado das principais viaturas do Exército Brasileiro.</p>
+    </header>
+
+    <!-- Filtros Interativos -->
+    <div class="controls">
+        <button class="btn-filter active" onclick="filterData('todos', event)">Todos</button>
+        <button class="btn-filter" onclick="filterData('rodas', event)">Sobre Rodas</button>
+        <button class="btn-filter" onclick="filterData('lagartas', event)">Sobre Lagartas</button>
+        <button class="btn-filter" onclick="filterData('combate', event)">Cavalaria / Choque</button>
+    </div>
+
+    <!-- Conteúdo Principal -->
+    <main class="container">
+        <div class="grid" id="vehicles-grid">
+            <!-- Cards inseridos dinamicamente -->
+        </div>
+    </main>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modal-overlay" onclick="closeModalOnOverlay(event)">
+        <div class="modal">
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <img id="modal-img" src="" alt="" class="modal-header-img">
+            
+            <div class="modal-content">
+                <div class="modal-title-block">
+                    <h2 class="modal-title" id="modal-title">Título</h2>
+                    <span id="modal-tag" class="modal-tag">Categoria</span>
+                </div>
+
+                <div class="modal-section">
+                    <p id="modal-desc" class="modal-desc"></p>
+                </div>
+
+                <div class="modal-section">
+                    <h3 class="modal-section-title">🛠️ Ficha Técnica</h3>
+                    <ul class="modal-list" id="modal-specs"></ul>
+                </div>
+
+                <div class="modal-section">
+                    <h3 class="modal-section-title">📜 Contexto Histórico e Operacional</h3>
+                    <div class="modal-history-box">
+                        <div id="modal-history" class="modal-history"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- WIDGET INTERATIVO DO AUTOR (Canto Inferior Esquerdo) -->
+    <div class="author-widget">
+        <div class="widget-header">
+            <span class="status-dot"></span>
+            <span class="widget-label">Desenvolvedor</span>
+        </div>
+        <div class="widget-author-name">Lucas Smek</div>
+        <a href="mailto:rctlucas18@gmail.com" class="widget-email-btn">
+            ✉️ rctlucas18@gmail.com
+        </a>
+    </div>
+
+    <!-- Footer com Bloco do Autor -->
+    <footer>
+        <div class="footer-author-box">
+            <h5>Desenvolvido por Lucas Smek</h5>
+            <p>Projeto focado em interfaces web modernas e catálogos táticos interativos.</p>
+            <a href="mailto:rctlucas18@gmail.com" class="footer-email-link">✉️ rctlucas18@gmail.com</a>
+        </div>
+        <p>Exército Brasileiro - Braço Forte, Mão Amiga</p>
+        <p>Dados técnicos e históricos baseados em fontes públicas do Programa Forças Blindadas.</p>
+    </footer>
+
+    <script>
+        // --- BANCO DE DADOS (TEXTOS HISTÓRICOS AMPLIADOS) ---
+        const vehicles = [
+            {
+                id: 'centauro',
+                name: 'Centauro II BR',
+                category: 'Caça-Tanques / Reconhecimento',
+                type: 'rodas combate',
+                tag: '8x8 - Nova Aquisição',
+                image: 'img/centauro.png',
+                shortSpec: '⚡ Canhão 120mm / ⚙️ Digitalizado',
+                desc: 'A Viatura Blindada de Cavalaria (VBC Cav) mais moderna da América Latina, projetada para alta mobilidade tática e extremo poder de fogo antitanque.',
+                specs: {
+                    'Origem': 'Itália (Iveco-OTO Melara / CIO)',
+                    'Armamento': 'Canhão 120mm/45 calibres',
+                    'Tração': '8x8 Integral Run-flat',
+                    'Velocidade Máxima': '105 km/h em estrada',
+                    'Tripulação': '3 militares (Comandante, Atirador, Motorista)',
+                    'Destaque': 'Sistema Hunter-Killer & Optrônicos de última geração'
+                },
+                history: `
+                    <p>A escolha do Centauro II BR pelo Exército Brasileiro representa o maior salto tecnológico em capacidade de fogo terrestre da Força Terrestre nas últimas décadas. O processo de seleção ocorreu no âmbito do Programa Estratégico do Exército (Prg EE) "Forças Blindadas", visando substituir as consagradas, porém defasadas, viaturas EE-9 Cascavel que operavam desde a década de 1970.</p>
+
+                    <p>O Centauro II não é apenas um blindado com rodas, mas uma plataforma digitalizada de caça-tanques de última geração. Equipado com um poderoso canhão de 120mm capaz de disparar munições modernas do padrão OTAN (incluindo munições penetradoras de energia cinética APFSDS), ele oferece a mesma capacidade de fogo de um Carro de Combate Principal (MBT) pesado, contudo com a flexibilidade, velocidade de deslocamento e menor custo logístico característicos de uma plataforma sobre rodas 8x8.</p>
+
+                    <p>Com sua chegada aos Regimentos de Cavalaria Mecanizada do Brasil, o país eleva expressivamente seu poder de dissuasão estratégica na América do Sul, alinhando-se com as doutrinas militares mais modernas do mundo que prezam pela alta mobilidade, interoperabilidade de dados táticos e proteção para a tripulação.</p>
+                `
+            },
+            {
+                id: 'guarani',
+                name: 'VBTP-MSR Guarani',
+                category: 'Transporte de Tropas / Anfíbio',
+                type: 'rodas',
+                tag: '6x6 - Produção Nacional',
+                image: 'img/guarani.png',
+                shortSpec: '🌊 Anfíbio / 👥 11 Militares',
+                desc: 'A espinha dorsal da Infantaria Mecanizada brasileira, desenvolvida nacionalmente com foco em proteção blindada, modularidade e versatilidade.',
+                specs: {
+                    'Origem': 'Brasil (IDV / Exército Brasileiro)',
+                    'Capacidade': '11 militares (3 tripulantes + 8 combatentes)',
+                    'Armamento': 'Torre REMAX (.50/7.62mm) ou UT-30BR (30mm)',
+                    'Tração': '6x6 Anfíbio (Propulsão por hélices hídricas)',
+                    'Proteção': 'Especial contra minas terrestres (MRAP)',
+                    'Status': 'Mais de 600 unidades entregues ao EB'
+                },
+                history: `
+                    <p>O projeto da Viatura Blindada Transporte de Pessoal - Média Sobre Rodas (VBTP-MSR) Guarani representa a consolidação da Base Industrial de Defesa (BID) do Brasil no século XXI. Idealizado para substituir a lendária família de blindados EE-11 Urutu, o Guarani foi projetado pelo Departamento de Ciência e Tecnologia do Exército (DCT) em parceria estratégica com a Iveco Defense Vehicles em Sete Lagoas (MG).</p>
+
+                    <p>Diferente de seus antecessores, o Guarani conta com uma estrutura em chassi de aço blindado em formato em V (V-shaped hull), projetada especificamente para dispersar a onda de choque decorrente da explosão de minas terrestres e artefatos explosivos improvisados (IEDs). Além disso, sua eletrônica embarcada de bordo integra sistemas avançados de navegação, visão noturna e comandos táticos digitalizados do sistema C2 (Comando e Controle).</p>
+
+                    <p>O Guarani também já provou sua eficiência internacionalmente, sendo exportado para países como Filipinas e Gana. Sua versatilidade permite que a plataforma seja configurada para diversas versões, incluindo ambulância, posto de comando, porta-morteiro e socorro mecânico, sendo fundamental nas operações de Garantia da Lei e da Ordem (GLO) e no patrulhamento das fronteiras brasileiras.</p>
+                `
+            },
+            {
+                id: 'leopard',
+                name: 'Leopard 1A5 BR',
+                category: 'Carro de Combate (MBT)',
+                type: 'lagartas combate',
+                tag: 'Lagartas - Força de Choque',
+                image: 'img/leopard.png',
+                shortSpec: '🎯 Canhão 105mm / 🛡️ Punho de Aço',
+                desc: 'O principal carro de combate do Exército Brasileiro, responsável pela força de choque e pela superioridade tática em terreno aberto.',
+                specs: {
+                    'Origem': 'Alemanha (Krauss-Maffei Wegmann)',
+                    'Armamento Principal': 'Canhão L7A3 105mm estriado',
+                    'Peso Operacional': '42,5 Toneladas',
+                    'Velocidade Máxima': '65 km/h',
+                    'Tripulação': '4 militares (Comandante, Atirador, Municiador, Motorista)',
+                    'Controle de Tiro': 'Sistem EMES-18 com Visor Térmico'
+                },
+                history: `
+                    <p>O Leopard 1A5 BR é o verdadeiro "Punho de Aço" dos Regimentos de Carros de Combate (RCC) do Exército Brasileiro. Adquirido junto ao Ministério da Defesa da Alemanha no final dos anos 2000, o modelo integrou a segunda grande onda de modernização da Cavalaria Blindada nacional, que anteriormente operava unidades do M60A3 TTS norte-americano e versões mais antigas do próprio Leopard (1A1).</p>
+
+                    <p>A versão 1A5 destaca-se por incorporar um sistema de controle de tiro extremamente preciso derivado do lendário Leopard 2. Equipado com o optrônico EMES-18, o atirador conta com visão térmica de alta resolução e telêmetro laser acoplado, permitindo engajar alvos com altíssima probabilidade de acerto no primeiro disparo, mesmo em movimento ou em condições de escuridão total e fumaça densa.</p>
+
+                    <p>Apesar de seu projeto original ter nascido durante o auge da Guerra Fria, a combinação de grande mobilidade em terreno acidentado, perfil baixo e excelente optrônica mantém o Leopard 1A5 BR como um vetor temível no cenário sul-americano. Atualmente, o Exército estuda programas de revitalização e substituição futura destas plataformas pesadas sobre lagartas.</p>
+                `
+            },
+            {
+                id: 'guaicurus',
+                name: 'VBMT-LSR Guaicurus',
+                category: 'Multitarefa / Patrulha',
+                type: 'rodas',
+                tag: '4x4 - Blindagem LMV',
+                image: 'img/guaicuru2.png',
+                shortSpec: '🛡️ Proteção IED / 🚀 Ágil',
+                desc: 'Veículo blindado leve de altíssima mobilidade táctica, projetado para patrulha de reconhecimento, comando e missões de forças especiais.',
+                specs: {
+                    'Origem': 'Itália / Brasil (Iveco LMV - Light Multirole Vehicle)',
+                    'Tração': '4x4 Permanente com bloqueio de diferencial',
+                    'Proteção': 'STANAG 4569 Nível 2 (Proteção balística e anti-minas)',
+                    'Armamento': 'Torre automatizada REMAX ou reparo manual',
+                    'Capacidade': '5 militares totalmente equipados',
+                    'Status': 'Em operação nas unidades de Cavalaria Mecanizada'
+                },
+                history: `
+                    <p>Denominado em homenagem à guerreira tribo indígena pantaneira conhecida por sua habilidade equestre tática, o VBMT-LSR (Viatura Blindada Multitarefa - Leve Sobre Rodas) Guaicurus foi incorporado para suprir uma importante necessidade operacional: uma viatura leve, rápida, mas capaz de proteger a tropa contra disparos de fuzil e explosões de minas terrestres.</p>
+
+                    <p>Baseado no aclamado conceito internacional do Iveco LMV, o Guaicurus se destaca pela sua célula de sobrevivência blindada desmontável. Seus assentos são suspensos no teto do veículo (em vez de fixados no assoalho), o que impede que a energia de uma explosão abaixo das rodas seja transmitida diretamente para a coluna vertebral dos tripulantes.</p>
+
+                    <p>Com tração 4x4 de alta performance e peso reduzido, ele pode ser facilmente transportado por aeronaves de carga como o KC-390 Millennium da Força Aérea Brasileira. É ideal para missões de reconhecimento rápido, operações urbanas de alto risco, escolta de comboios e patrulhamento de fronteira em terrenos de difícil acesso.</p>
+                `
+            },
+            {
+                id: 'm113',
+                name: 'M113BR',
+                category: 'Transporte de Tropas (APC)',
+                type: 'lagartas',
+                tag: 'Lagartas - Modernizado',
+                image: 'img/m113.png',
+                shortSpec: '🔧 Confiável / 👥 13 Militares',
+                desc: 'A plataforma blindada sobre lagartas mais famosa do mundo, amplamente modernizada para continuar servindo à Infantaria Blindada.',
+                specs: {
+                    'Origem': 'EUA (FMC Corp) / Modernizado no Brasil (AGR)',
+                    'Capacidade': '13 militares (2 tripulantes + 11 infantaria)',
+                    'Velocidade Máxima': '61 km/h',
+                    'Peso em Ordem de Marcha': '12,3 Toneladas',
+                    'Motorização': 'Detroit Diesel 6V53T (275 hp)',
+                    'Transmissão': 'Allison X200-4 Automatic'
+                },
+                history: `
+                    <p>O M113 é uma lenda viva da história militar global, estando em serviço em dezenas de países desde a Guerra do Vietnã. No Exército Brasileiro, a viatura chegou nas décadas de 1960 e 1970, tornando-se o principal meio de transporte da Infantaria Blindada integrada às Brigadas Cursadas e Blindadas.</p>
+
+                    <p>Diante da necessidade de prolongar a vida útil destas plataformas confiáveis, o Exército Brasileiro firmou uma parceria com a BAE Systems e realizou a modernização de sua frota nas instalações do Parque Regional de Manutenção da 5ª Região Militar (PMR/5) em Curitiba. O padrão "M113BR" substituiu os antigos motores e transmissões por conjuntos modernos, atualizou a eletrônica de bordo, suspensão e sistemas de navegação.</p>
+
+                    <p>A estrutura em alumínio de grau militar da blindagem do M113 fornece leveza e excelente flutuabilidade anfíbia leve. Sua capacidade de acompanhar os carros de combate Leopard 1A5 através de terrenos enlameados e acidentados garante que a infantaria desembarque com segurança diretamente nas posições de objetivo do inimigo.</p>
+                `
+            },
+            {
+                id: 'cascavel',
+                name: 'EE-9 Cascavel (NG)',
+                category: 'Reconhecimento Armado',
+                type: 'rodas combate',
+                tag: '6x6 - Ícone Nacional NG',
+                image: 'img/cascavel.png',
+                shortSpec: '🎯 Canhão 90mm Cockerill / ⚙️ Em Modernização',
+                desc: 'O maior símbolo da indústria bélica nacional do século XX, passando por uma profunda atualização tática para o padrão Nova Geração.',
+                specs: {
+                    'Origem': 'Brasil (ENGESA) / Modernização (Consórcio Akaer)',
+                    'Armamento': 'Canhão 90mm Engesa/Cockerill + Míssil Antitanque (ATGM)',
+                    'Tração': '6x6 com Suspensão Boomerang exclusiva',
+                    'Velocidade Máxima': '100 km/h',
+                    'Tripulação': '3 militares',
+                    'Sistemas': 'Optrotrônica infravermelha e novos computadores de tiro'
+                },
+                history: `
+                    <p>Desenvolvido na década de 1970 pela extinta fabricante brasileira ENGESA (Engenheiros Especializados S.A.), o EE-9 Cascavel colocou o Brasil no mapa das grandes potências exportadoras de material de defesa. Operado com sucesso em diversos conflitos no Oriente Médio, África e América Latina, o Cascavel ficou famoso por sua robustez mecânica e pela inovadora suspensão "Boomerang", capaz de manter as rodas traseiras sempre em contato com o solo em terrenos extremamente irregulares.</p>
+
+                    <p>Embora a chegada do novo Centauro II represente o futuro do reconhecimento pesado no Exército, dezenas de unidades do Cascavel passarão pelo programa de modernização "Cascavel NG" (Nova Geração). Este programa estende a operação do blindado por mais 15 a 20 anos.</p>
+
+                    <p>A modernização inclui a substituição completa do motor e transmissão, instalação de matrizes optrônicas modernas com visores térmicos para o comandante e atirador, além da integração de um lançador de mísseis antitanque guiados (ATGM) acoplado à torre. Isso permite que o veteraníssimo blindado brasileiro consiga engajar e destruir tanques modernos a quilômetros de distância.</p>
+                `
+            }
+        ];
+
+        // --- FUNÇÕES DE INTERATIVIDADE ---
+
+        function renderCards(items) {
+            const grid = document.getElementById('vehicles-grid');
+            grid.innerHTML = ''; 
+
+            if (items.length === 0) {
+                grid.innerHTML = '<p style="text-align:center; grid-column: 1/-1; color:var(--text-muted); font-size:1.2rem; padding: 3rem 0;">Nenhum blindado encontrado nesta categoria.</p>';
+                return;
+            }
+
+            items.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.onclick = () => openModal(item.id);
+                card.innerHTML = `
+                    <div class="card-img-container">
+                        <img src="${item.image}" alt="Blindado ${item.name}" loading="lazy" onerror="this.src='https://via.placeholder.com/600x400?text=Imagem+N%C3%A3o+Encontrada'">
+                    </div>
+                    <div class="card-body">
+                        <span class="card-tag">${item.tag}</span>
+                        <h3 class="card-title">${item.name}</h3>
+                        <p class="card-spec">${item.shortSpec}</p>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function filterData(category, event) {
+            document.querySelectorAll('.btn-filter').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            if (category === 'todos') {
+                renderCards(vehicles);
+            } else {
+                const filtered = vehicles.filter(v => v.type.includes(category));
+                renderCards(filtered);
+            }
+        }
+
+        function openModal(id) {
+            const vehicle = vehicles.find(v => v.id === id);
+            if (!vehicle) return;
+
+            document.getElementById('modal-title').innerText = vehicle.name;
+            document.getElementById('modal-tag').innerText = vehicle.category + ' | ' + vehicle.tag;
+            
+            const modalImg = document.getElementById('modal-img');
+            modalImg.src = vehicle.image;
+            modalImg.alt = vehicle.name;
+            modalImg.onerror = function() {
+                this.src = 'https://via.placeholder.com/600x400?text=Imagem+N%C3%A3o+Encontrada';
+            };
+
+            document.getElementById('modal-desc').innerText = vehicle.desc;
+
+            const specsList = document.getElementById('modal-specs');
+            specsList.innerHTML = ''; 
+
+            for (const [key, value] of Object.entries(vehicle.specs)) {
+                const li = document.createElement('li');
+                li.innerHTML = `<strong>${key}</strong> <span>${value}</span>`;
+                specsList.appendChild(li);
+            }
+
+            const historyBlock = document.getElementById('modal-history');
+            if (vehicle.history) {
+                historyBlock.innerHTML = vehicle.history;
+                historyBlock.parentElement.style.display = 'block';
+            } else {
+                historyBlock.parentElement.style.display = 'none';
+            }
+
+            document.getElementById('modal-overlay').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            document.getElementById('modal-overlay').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        function closeModalOnOverlay(event) {
+            if (event.target.id === 'modal-overlay') {
+                closeModal();
+            }
+        }
+
+        window.onload = () => {
+            renderCards(vehicles);
+        };
+    </script>
+</body>
+</html>
