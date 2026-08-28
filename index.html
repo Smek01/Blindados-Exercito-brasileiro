@@ -495,6 +495,40 @@
             .widget-author-name { font-size: 0.9rem; }
             .widget-email-btn { font-size: 0.75rem; }
         }
+        /* REGRAS PARA CELULAR E DISPOSITIVOS MÓVEIS */
+@media (max-width: 768px) {
+
+  /* Ajusta o tamanho dos textos e títulos no topo */
+  body {
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  h1 {
+    font-size: 1.8rem;
+  }
+
+  /* Se você usou grid ou flexbox nos cards dos blindados, 
+     força eles a ficarem em 1 coluna vertical */
+  .grid-container, .container, main {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 0 10px;
+  }
+
+  /* Faz todas as imagens se adaptarem à largura do celular sem estourar a tela */
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Se houver menu ou botões lado a lado, empilha na vertical */
+  nav, .menu {
+    flex-direction: column;
+    align-items: center;
+  }
+}
     </style>
 </head>
 <body>
