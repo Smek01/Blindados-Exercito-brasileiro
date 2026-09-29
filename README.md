@@ -15,8 +15,8 @@ Atualmente, busco uma oportunidade de **Estágio** ou posição **Júnior** onde
 
 ### 📌 Meus principais projetos:
 * 🚀 **(Nome do Projeto 1):** (cafeteria_1)
-* 💡 **(Nome do Projeto 2):** (em andamento...)
-
+* 💡 **(Nome do Projeto 2):** (blindados-exercito-brasileiro)
+  3º Projeto em andamento...
 ---
 
 ### 📬 Onde me encontrar:
